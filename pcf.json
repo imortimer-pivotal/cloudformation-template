@@ -385,8 +385,9 @@
         ],
         "UserData" : { "Fn::Base64" : { "Fn::Join" : ["",[
             "#!/bin/bash -ex","\n",
-             "sleep 60","\n",
-            "## This sleep just makes sure opsmanager gets started up before doing curl below - probably better way to do this","\n",
+             "response=$(curl -sL -w \"%{http_code} %{url_effective}\\n" "http://localhost/api\" -o /dev/null) ", "\n",
+             "if [ $response = 200 ]; then ", "\n", 
+            "## This checks for a 200 response from the server to make sure it's up. TODO: use and 'until' loop.","\n",
             "curl --insecure \"https://localhost/api/users\" -d 'user[user_name]=",{ "Ref" : "OpsMgrWebUID" },"&user[password]=",{ "Ref" : "OpsMgrWebPW" },"&user[password_confirmation]=",{ "Ref" : "OpsMgrWebPW" },"' -X POST","\n",                 
             "printf 'create database uaa;\ncreate database ccdb;\ncreate database console;\ncreate database notifications;\ncreate database autoscale;\ncreate database app_usage_service;\n' > /tmp/createdb.sql","\n", 
             "mysql -h ",{"Fn::GetAtt" : [ "MyRDS" , "Endpoint.Address" ]}," -u ",{ "Ref" : "DBUser" }," -p",{ "Ref" : "DBPassword" }," < /tmp/createdb.sql","\n",
@@ -396,6 +397,9 @@
               "#### Dynamic Name from file not working due to variable inside single quotes ### - curl 'https://localhost/api/products' -F 'product[file]=@/tmp/${erurl##*/}' -X POST -k -u ",{ "Ref" : "OpsMgrWebUID" },":",{ "Ref" : "OpsMgrWebPW" },"\n",
               "curl 'https://localhost/api/products' -F 'product[file]=@/tmp/cf-1.4.0.0.pivotal' -X POST -k -u ",{ "Ref" : "OpsMgrWebUID" },":",{ "Ref" : "OpsMgrWebPW" },"\n",
             "fi","\n",
+            "else", "\n",
+            "echo Ops Manager is not yet up and running. You may have to add products manually. See documentation.", "\n",
+            "fi", "\n",
              "touch /tmp/done.txt","\n"
         ]]}},
         "NetworkInterfaces": [
