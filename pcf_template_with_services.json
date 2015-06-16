@@ -87,6 +87,7 @@
     "PCFFoundationGroupID": {
       "AllowedPattern": "[-a-zA-Z0-9]*",
       "ConstraintDescription": "Alphanumeric characters and dashes only",
+      "PCFFoundationGroupID":"imorti", 
       "Type": "String",
       "MinLength": "5",
       "MaxLength": "32",
@@ -305,8 +306,8 @@
         ],
         "UserData" : { "Fn::Base64" : { "Fn::Join" : ["",[
             "#!/bin/bash -ex","\n",
-             "response=$(curl -sL -w \"%{http_code} %{url_effective}\\n" "http://localhost/api\" -o /dev/null) ", "\n",
-             "if [ $response = 200 ]; then ", "\n", 
+             "response=$(curl -sL -w \"%{http_code}\" \"http://localhost/api\" -o /dev/null) ", "\n",
+             "if [ $response = 200 ];then ","\n", 
             "## This sleep just makes sure opsmanager gets started up before doing curl below - probably better way to do this","\n",
             "curl --insecure \"https://localhost/api/users\" -d 'user[user_name]=",{ "Ref" : "OpsMgrWebUID" },"&user[password]=",{ "Ref" : "OpsMgrWebPW" },"&user[password_confirmation]=",{ "Ref" : "OpsMgrWebPW" },"' -X POST","\n",
             "printf 'create database uaa;\ncreate database ccdb;\ncreate database console;\ncreate database notifications;\ncreate database autoscale;\ncreate database app_usage_service;\n' > /tmp/createdb.sql","\n",
